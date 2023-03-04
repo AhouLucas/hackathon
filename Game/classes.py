@@ -55,7 +55,15 @@ class Drink:
     def __init__(self, type, position):
         self.type = Drink.TYPE[type]
         self.position = position
+        
+        self.drunk = False
 
     def show(self, screen):
         img = pg.image.load(self.type.image)
         screen.blit(img, self.position)
+        
+    def animate(self, screen):
+        if self.position[1] > screen.get_size()[1] // 4:
+            self.show(screen)
+            self.position[1] -= 1
+            

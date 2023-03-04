@@ -5,7 +5,6 @@ from classes import Player, Drink
 #### Pygame Initialisation ####
 
 pg.font.init()
-
 pg.init()
 pg.display.set_caption("Hackathon : Edition 24H !")
 clock = pg.time.Clock()
@@ -36,6 +35,7 @@ background = [background_1, background_2]
 ###################
 
 #### Functions ####
+
 def spawn_drink(player: int):
     """Adds a drink to the players's drink list.
 
@@ -62,18 +62,15 @@ def start_menu():
 def animate_background():
     """Animates the background by alternating between two images.
     """
-    global count_frame
-    first_image = True
-    if count_frame % 60 == 0:
-        first_image = True
-    elif count_frame % 60 == 30:
-        first_image = False
-    
-    if first_image:
-        screen.blit(background[0], (0,0))
-    else:
-        screen.blit(background[1], (0,0))
+    global count_frame, background
 
+    if count_frame % 30 == 0:
+        background[0], background[1] = background[1], background[0]
+    elif count_frame % 60 == 0:
+        background[0], background[1] = background[1], background[0]
+
+    screen.blit(background[0], (0,0))
+    
 def animate_drinks():
     for drink in Player1_drinks:
         if drink.drunk: Player1_drinks.remove(drink)
@@ -88,24 +85,40 @@ def write_to_screen(text, position, font_size, color):
     text = font.render(text, True, color)
     screen.blit(text, position)
 
-spawn_drink(1)
-spawn_drink(2)
+def drinks_drink(player: int):
+    if player == 1:
+        for drink in Player1_drinks:
+            Player_1.drink(drink)
+            Player1_drinks.remove(drink)
+        Player1_drinks.append(Drink(randint(0, 2), [WIDTH / 3, HEIGHT]))
+        
+    elif player == 2:
+        for drink in Player2_drinks:
+            Player_2.drink(drink)
+            Player2_drinks.remove(drink)
+        Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT]))
+    
+
+
 
 def main():
     global running, start, count_frame
     play_music('Musics/Start Menu.mp3')
     while running:
+        # Get the user keyboard inputs
+        keys = pg.key.get_pressed() 
+
+        # Check for events
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
                 return
-            elif start == False and event.type == pg.MOUSEBUTTONDOWN:
+            elif start == False and keys[pg.K_SPACE]:
                 start = True
                 pg.mixer.music.stop()
                 play_music('Musics/Gameplay.mp3')
 
 
-        screen.fill((0,0,0))
         animate_background()
         
         # Start menu
@@ -116,6 +129,10 @@ def main():
             Player_1.show(screen)
             Player_2.show(screen)
             animate_drinks()
+            if keys[pg.K_z]:
+                drinks_drink(1)
+            elif keys[pg.K_m]:
+                drinks_drink(2)
 
         count_frame += 1
         pg.display.update()

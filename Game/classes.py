@@ -1,5 +1,5 @@
 import pygame as pg
-
+from colorsys import hsv_to_rgb
 
 class Gauge:
     def __init__(self, position, size, color, max_value):
@@ -7,7 +7,7 @@ class Gauge:
         self.size = size
         self.color = color
         self.max_value = max_value
-        self.value = 50
+        self.value = 0
 
     def show(self, screen):
         pg.draw.rect(screen, self.color, (self.position, (self.size[0], self.size[1] * self.value / self.max_value)), border_radius=self.size[0])
@@ -29,7 +29,7 @@ class Player:
         self.image = image
         self.dead = False
         self.rect = pg.Rect(position, (50, 100))
-        self.drunkness_level = Gauge((position[0]-100, position[1]), (50, 200), (0, 255, 0), 100)
+        self.drunkness_level = Gauge((position[0]-100, position[1]), (50, 200), (0, 255, 0), 1000)
         
 
     def show(self, screen):
@@ -65,4 +65,3 @@ class Drink:
         if self.position[1] > 3 * screen.get_size()[1] // 4:
             self.position[1] -= 10
         self.show(screen)
-            

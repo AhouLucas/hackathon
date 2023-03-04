@@ -7,10 +7,10 @@ class Gauge:
         self.size = size
         self.color = color
         self.max_value = max_value
-        self.value = 0
+        self.value = 50
 
     def show(self, screen):
-        pg.draw.rect(screen, self.color, (self.position, (self.size[0], self.size[1] * self.value / self.max_value)))
+        pg.draw.rect(screen, self.color, (self.position, (self.size[0], self.size[1] * self.value / self.max_value)), border_radius=self.size[0])
 
     def add(self, value):
         self.value += value
@@ -29,7 +29,7 @@ class Player:
         self.image = image
         self.dead = False
         self.rect = pg.Rect(position, (50, 100))
-        self.drunkness_level = Gauge((0, 0), (50, 100), (0, 255, 0), 100)
+        self.drunkness_level = Gauge((position[0]-100, position[1]), (50, 200), (0, 255, 0), 100)
         
 
     def show(self, screen):

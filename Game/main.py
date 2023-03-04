@@ -1,26 +1,35 @@
 import pygame as pg
-from classes import Player
+from classes import Player, Drink
 
 #### Pygame Initialisation ####
 
 pg.init()
 pg.display.set_caption("Hackathon : Edition 24H !")
 clock = pg.time.Clock()
-ASPECT_RATIO = 16/9
-WIDTH = 1000; HEIGHT = WIDTH/ASPECT_RATIO
-screen = pg.display.set_mode((WIDTH, HEIGHT))
+screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
+WIDTH, HEIGHT = screen.get_width(), screen.get_height()
 
 ###############################
 
 
 #### Variables ####
-running = True
-# Set this to True to start the game
-start = False
 
+# Game
+running = True
+start = False
+count_frame = 0 # Used to get the frame number for timing purposes
+
+# Players
 Player_1, Player_2 = Player((WIDTH/3, HEIGHT/3), "Player 1"), Player((2*WIDTH/3, HEIGHT/3), "Player 2")
 Player1_drinks = []
 Player2_drinks = []
+
+# Images
+background_1 = pg.image.load("images/background/background1-large.png")
+background_2 = pg.image.load("images/background/background2-large.png")
+background_1 = pg.transform.scale(background_1, (WIDTH, HEIGHT))
+background_2 = pg.transform.scale(background_2, (WIDTH, HEIGHT))
+background = [background_1, background_2]
 ###################
 
 #### Functions ####
@@ -54,12 +63,21 @@ def start_menu():
     """Displays the start menu.
     """
     global start
-    screen.fill((255, 0, 0))
     clock.tick(60)
     pg.display.flip()
 
+def animate_background():
+    """Animates the background by alternating between two images.
+    """
+    global count_frame
+    if count_frame % 30 == 0:
+        screen.blit(background[0], (0, 0))
+    elif count_frame % 30 == 15:
+        screen.blit(background[1], (0, 0))
+
+
 def main():
-    global running, start
+    global running, start, count_frame
     play_music('Musics/Start Menu.mp3')
     while running:
         for event in pg.event.get():
@@ -71,17 +89,19 @@ def main():
                 pg.mixer.music.stop()
                 play_music('Musics/Gameplay.mp3')
 
+        animate_background()
         
         # Game loop only if start is True
         # Start menu
         if not start:
             start_menu()
         else:
-            screen.fill((255, 255, 255))
             Player_1.show(screen)
             Player_2.show(screen)
-            pg.display.flip()
-            clock.tick(60)
+
+        count_frame += 1
+        clock.tick(60)
+        pg.display.flip()
             
 
 if __name__ == "__main__":

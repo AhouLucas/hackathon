@@ -62,7 +62,7 @@ class Drink:
         screen.blit(self.img, self.position)
         
     def animate(self, screen):
-        if self.position[1] > screen.get_size()[1] // 4:
-            self.position[1] -= 1
-            self.show(screen)
+        if self.position[1] > 3 * screen.get_size()[1] // 4:
+            self.position[1] -= 5
+        self.show(screen)
             

@@ -107,9 +107,9 @@ def main():
         else:
             Player_1.show(screen)
             Player_2.show(screen)
+            animate_drinks()
 
         count_frame += 1
-        animate_drinks()
         pg.display.flip()
         pg.display.update()
         clock.tick(60)

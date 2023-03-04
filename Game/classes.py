@@ -63,6 +63,6 @@ class Drink:
         
     def animate(self, screen):
         if self.position[1] > 3 * screen.get_size()[1] // 4:
-            self.position[1] -= 5
+            self.position[1] -= 10
         self.show(screen)
             

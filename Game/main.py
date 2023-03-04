@@ -28,8 +28,8 @@ Player1_drinks = []
 Player2_drinks = []
 
 # Images
-background_1 = pg.image.load("images/background/background1-large.png")
-background_2 = pg.image.load("images/background/background2-large.png")
+background_1 = pg.image.load("Images/background/background1-large.png")
+background_2 = pg.image.load("Images/background/background2-large.png")
 background_1 = pg.transform.scale(background_1, (WIDTH, HEIGHT))
 background_2 = pg.transform.scale(background_2, (WIDTH, HEIGHT))
 background = [background_1, background_2]
@@ -63,10 +63,16 @@ def animate_background():
     """Animates the background by alternating between two images.
     """
     global count_frame
-    if count_frame % 30 == 0:
-        screen.blit(background[0], (0, 0))
-    elif count_frame % 30 == 15:
-        screen.blit(background[1], (0, 0))
+    first_image = True
+    if count_frame % 60 == 0:
+        first_image = True
+    elif count_frame % 60 == 30:
+        first_image = False
+    
+    if first_image:
+        screen.blit(background[0], (0,0))
+    else:
+        screen.blit(background[1], (0,0))
 
 def animate_drinks():
     for drink in Player1_drinks:
@@ -98,19 +104,20 @@ def main():
                 pg.mixer.music.stop()
                 play_music('Musics/Gameplay.mp3')
 
+
+        screen.fill((0,0,0))
         animate_background()
         
-        # Game loop only if start is True
         # Start menu
         if not start:
             start_menu()
+        # Game loop only if start is True
         else:
             Player_1.show(screen)
             Player_2.show(screen)
             animate_drinks()
 
         count_frame += 1
-        pg.display.flip()
         pg.display.update()
         clock.tick(60)
             

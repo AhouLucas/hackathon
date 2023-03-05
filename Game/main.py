@@ -2,8 +2,11 @@ import pygame as pg
 from random import randint
 from classes import Player, Drink
 from controller import controller_thread
+from network import socket_read
 import threading, sys, time
-import time
+import socket
+import json
+
 # from Controller import controller
 
 #### Pygame Initialisation ####
@@ -30,6 +33,7 @@ Player_1, Player_2 = Player((WIDTH/3, HEIGHT/3), "Player 1"), Player((2*WIDTH/3,
 Player1_drinks = []
 Player2_drinks = []
 players_state = [False, False]
+players_connected = [False, False]
 
 # Images
 background_1 = pg.image.load("Images/sprites/background1.png")
@@ -37,6 +41,13 @@ background_2 = pg.image.load("Images/sprites/background2.png")
 background_1 = pg.transform.scale(background_1, (WIDTH, HEIGHT))
 background_2 = pg.transform.scale(background_2, (WIDTH, HEIGHT))
 background = [background_1, background_2]
+
+# Newtork
+hostname = "146.190.125.98"
+port = 8081
+client = socket.socket()
+client.connect((hostname, port))
+socket_data = []
 ###################
 
 #### Functions ####
@@ -105,6 +116,19 @@ def drinks_drink(player: int):
         Player_2.drink(Player2_drinks[-1])
         # Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT]))
 
+def socket_send(data):
+    data = json.dumps(data)
+    client.send(bytes(data, "utf-8"))
+
+def consume_data():
+    global socket_data
+    while len(socket_data):
+        data = socket_data.pop(0)
+        if data["type"] == "player_connected":
+            players_connected[data["player"]] = True
+        elif data["type"] == "player_disconnected":
+            players_connected[data["player"]] = False
+
 def main():
     global running, start, count_frame
     play_music('Musics/Start Menu.mp3')
@@ -116,8 +140,9 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()   
-            elif start == False and keys[pg.K_SPACE]:
+            elif start == False and all(players_connected):
                 start = True
+                socket_send({"type": "game_start"})
                 pg.mixer.music.stop()
                 play_music('Musics/Gameplay.mp3')
 
@@ -138,11 +163,17 @@ def main():
        
         count_frame += 1
         animate_drinks()
+        consume_data()
         pg.display.update()
         clock.tick(60)
             
 
 if __name__ == "__main__":
-    thread1 = threading.Thread(target=controller_thread, args=(players_state,))
-    thread1.start()
+
+    #Threads
+    movement_control_thread = threading.Thread(target=controller_thread, args=(players_state,))
+    socket_read_thread = threading.Thread(target=socket_read, args=(client, socket_data))
+    movement_control_thread.start()
+    socket_read_thread.start()
+
     main()  

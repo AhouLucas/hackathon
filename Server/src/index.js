@@ -1,5 +1,6 @@
 import { WebSocketServer } from "ws";
 import { createServer } from "https";
+import { readFileSync } from "fs";
 import net from "net";
 
 let game = null;
@@ -50,8 +51,12 @@ const ss = net.createServer((socket) => {
 ss.listen(8081);
 
 const server = createServer({
-  cert: readFileSync("/etc/letsencrypt/live/guindaille-sim.duckdns.org/fullchain.pem"),
-  key: readFileSync("/etc/letsencrypt/live/guindaille-sim.duckdns.org/privkey.pem"),
+  cert: readFileSync(
+    "/etc/letsencrypt/live/guindaille-sim.duckdns.org/fullchain.pem"
+  ),
+  key: readFileSync(
+    "/etc/letsencrypt/live/guindaille-sim.duckdns.org/privkey.pem"
+  ),
 });
 const wss = new WebSocketServer({ server });
 

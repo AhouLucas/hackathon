@@ -184,13 +184,14 @@ def main():
             Player_1.show(screen)
             Player_2.show(screen)
             count_drink_time()
+            print(players_time)
             if (players_state[0] or keys[pg.K_z]) and players_time[0] > 10:
                 Player1_drinks.append(Drink(0, [-80, -HEIGHT/2]) )
                 Player_1.drink(Player1_drinks[-1])
 
             elif (players_state[1] or keys[pg.K_m]) and players_time[1] > 10:
                 Player2_drinks.append(Drink(0, [-80, -HEIGHT/2]) )
-                Player_2.drink(Player1_drinks[-1])
+                Player_2.drink(Player2_drinks[-1])
 
         count_frame += 1
         animate_drinks()
@@ -203,7 +204,7 @@ if __name__ == "__main__":
 
     #Threads
     movement_control_thread = threading.Thread(target=controller_thread, args=(players_state,), daemon=True)
-    socket_read_thread = threading.Thread(target=socket_read, args=(client, socket_data), daemon=True)
+    socket_read_thread = threading.Thread(target=socket_read, args=(client, socket_data), daemon=True)  
     movement_control_thread.start()
     socket_read_thread.start()
 

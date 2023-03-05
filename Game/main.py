@@ -90,16 +90,20 @@ def write_to_screen(text, position, font_size, color):
 
 def drinks_drink(player: int):
     if player == 1:
-        for drink in Player1_drinks:
-            Player_1.drink(drink)
-            Player1_drinks.remove(drink)
+        # for drink in Player1_drinks:
+        #     Player_1.drink(drink)
+        #     Player1_drinks.remove(drink)
         Player1_drinks.append(Drink(randint(0, 2), [WIDTH / 3, HEIGHT]))
+        Player_1.drink(Player1_drinks[-1])
+        # Player1_drinks.append(Drink(randint(0, 2), [WIDTH / 3, HEIGHT]))
         
     elif player == 2:
-        for drink in Player2_drinks:
-            Player_2.drink(drink)
-            Player2_drinks.remove(drink)
+        # for drink in Player2_drinks:
+        #     Player_2.drink(drink)
+        #     Player2_drinks.remove(drink)
         Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT]))
+        Player_2.drink(Player2_drinks[-1])
+        # Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT]))
 
 def main():
     global running, start, count_frame

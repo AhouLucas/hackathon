@@ -1,41 +1,65 @@
-const State = {
-  MENU: 0,
-  ERROR: 1,
-  PLAYING: 2,
-}
+let playing = false;
+let player = -1;
+let mic_high = false;
+const startBtn = document.getElementById("start-btn");
+const logSpan = document.getElementById("log")
 
-const state = State.MENU
+console.log(startBtn);
 
-const startBtn = document.getElementById("start-btn")
-
-console.log(startBtn)
+let ws = null;
 
 startBtn.addEventListener("click", () => {
-  const ws = new WebSocket("ws://146.190.125.98:8080")
+  ws = new WebSocket("wss://guindaillesim.tech:8080");
 
-  ws.onconnect = () => {
+  ws.onopen = () => {
     console.log("Connected to ws!");
-    
-  }
+    startBtn.style.display = "none"
+  };
 
-  ws.onerror = () => {
-    document.getElementById("log").innerHTML = "Connection Error";
-  }
+  ws.onerror = (e) => {
+    console.log(e);
+    logSpan.innerHTML = "Connection Error";
+    logSpan.className = "nes-text is-error";
+  };
 
   ws.onmessage = (msg) => {
-    msg = JSON.parse(msg)
-    console.log(msg)
+    msg = JSON.parse(msg.data);
+    console.log(msg);
 
     switch (msg.type) {
-      case "error":
-        document.getElementById("log").innerHTML = "Service Error";
-      case "":
-        document.getElementById("log").innerHTML = "Connection Successful";
-    } 
-    
-  }
-  document.getElementById("button-text").innerHTML = "Restart Game";
-})
+      case "error": {
+        if (msg.content === "full") {
+          logSpan.innerHTML = "Game is full!";
+          logSpan.className = "nes-text is-error";
+        } else {
+          logSpan.innerHTML = "Service Error";
+          logSpan.className = "nes-text is-error";
+        }
+        break;
+      }
+      case "player_connected":
+        logSpan.innerHTML = `Waiting for players...`;
+        logSpan.className = "nes-text is-primary";
+        player = msg.player;
+        break;
+      case "game_start":
+        document.getElementById(
+          "log"
+        ).innerHTML = `Game started!\nYou are player ${player + 1}.`;
+        logSpan.className = "nes-text is-success";
+        playing = true
+        break;
+      case "game_end":
+        playing = false
+        break;
+      default:
+        logSpan.innerHTML =
+          "Unknown message from server!";
+        logSpan.className = "nes-text is-error";
+        break;
+    }
+  };
+});
 
 navigator.mediaDevices
   .getUserMedia({ video: false, audio: true })
@@ -50,20 +74,28 @@ navigator.mediaDevices
 
     // Analyze the sound
     setInterval(() => {
-        // Compute the max volume level (-Infinity...0)
-        const fftBins = new Float32Array(analyzer.frequencyBinCount); // Number of values manipulated for each sample
+      // Compute the max volume level (-Infinity...0)
+      const fftBins = new Float32Array(analyzer.frequencyBinCount); // Number of values manipulated for each sample
       analyzer.getFloatFrequencyData(fftBins);
-        // audioPeakDB varies from -Infinity up to 0
+      // audioPeakDB varies from -Infinity up to 0
       const audioPeakDB = Math.max(...fftBins);
 
-        // Compute a wave (0...)
-        const frequencyRangeData = new Uint8Array(analyzer.frequencyBinCount);
+      // Compute a wave (0...)
+      const frequencyRangeData = new Uint8Array(analyzer.frequencyBinCount);
       analyzer.getByteFrequencyData(frequencyRangeData);
       const sum = frequencyRangeData.reduce((p, c) => p + c, 0);
-        // audioMeter varies from 0 to 10
+      // audioMeter varies from 0 to 10
       const audioMeter = Math.sqrt(sum / frequencyRangeData.length);
 
       console.log(audioMeter)
+
+      if (playing) {
+        ws.send(
+          JSON.stringify({
+            type: audioMeter > 11 ? "mic_high": "mic_low"
+          })
+        );
+      }
     }, 100);
   })
   .catch((err) => {

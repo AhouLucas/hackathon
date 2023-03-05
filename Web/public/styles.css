@@ -1,0 +1,40 @@
+/*
+body {
+  font-family: "Public Pixel", sans-serif;
+  color: white;
+  background-color: #000040;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  margin: auto;
+}
+
+#start-btn {
+  font-family: "Public Pixel", sans-serif;
+  color: white;
+  background-color: transparent;
+  border-color: transparent;
+  cursor: pointer;
+}
+*/
+
+html,
+body,
+pre,
+code,
+kbd,
+samp {
+  font-family: "Press Start 2P";
+}
+
+body {
+  padding: 0 2rem;
+  margin: 0 2rem;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  margin-top: 150px;
+  text-align: center;
+}

@@ -23,6 +23,7 @@ const ss = net.createServer((socket) => {
 
   socket.on("data", (data) => {
     data = JSON.parse(data);
+    console.log(data)
 
     if (data) {
       switch (data.type) {

@@ -3,6 +3,8 @@ from random import randint
 from classes import Player, Drink
 from controller import controller_thread
 import threading, sys, time
+import time
+# from Controller import controller
 
 #### Pygame Initialisation ####
 
@@ -76,11 +78,9 @@ def animate_background():
     
 def animate_drinks():
     for drink in Player1_drinks:
-        if drink.drunk: Player1_drinks.remove(drink)
         drink.animate(screen)
             
     for drink in Player2_drinks:
-        if drink.drunk: Player1_drinks.remove(drink)
         drink.animate(screen)
 
 def write_to_screen(text, position, font_size, color):
@@ -100,7 +100,6 @@ def drinks_drink(player: int):
             Player_2.drink(drink)
             Player2_drinks.remove(drink)
         Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT]))
-    
 
 def main():
     global running, start, count_frame
@@ -128,9 +127,9 @@ def main():
         else:
             Player_1.show(screen)
             Player_2.show(screen)
-            if players_state[0]:
+            if players_state[0] or keys[pg.K_z]:
                 drinks_drink(1)
-            elif players_state[1]:
+            elif players_state[1] or keys[pg.K_m]:
                 drinks_drink(2)
 
         count_frame += 1

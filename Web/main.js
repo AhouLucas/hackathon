@@ -13,18 +13,28 @@ console.log(startBtn)
 startBtn.addEventListener("click", () => {
   const ws = new WebSocket("ws://146.190.125.98:8080")
 
-  ws.onconnect = () => console.log("Connected to ws!")
+  ws.onconnect = () => {
+    console.log("Connected to ws!");
+    
+  }
+
+  ws.onerror = () => {
+    document.getElementById("log").innerHTML = "Connection Error";
+  }
 
   ws.onmessage = (msg) => {
     msg = JSON.parse(msg)
+    console.log(msg)
 
     switch (msg.type) {
       case "error":
-        // Error
+        document.getElementById("log").innerHTML = "Service Error";
       case "":
+        document.getElementById("log").innerHTML = "Connection Successful";
     } 
     
   }
+  document.getElementById("button-text").innerHTML = "Restart Game";
 })
 
 navigator.mediaDevices

@@ -69,9 +69,9 @@ with mp_pose.Pose(
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         cv2.imshow('MediaPipe Pose', cv2.flip(image, 1))
 
-        if results_2.pose_landmarks != None and results_2.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].z < -2 and results_2.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].y > 0.7:
+        if results_2.pose_landmarks != None and results_2.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].z < -1.8 and results_2.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].y > 0.6:
             print("PERSON 2 GRABS A DRINK")
-        if results_1.pose_landmarks != None and results_1.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].z < -2 and results_1.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].y > 0.7:
+        if results_1.pose_landmarks != None and results_1.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].z < -1.8 and results_1.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].y > 0.6:
             print("PERSON 1 GRABS A DRINK")
 
         if cv2.waitKey(5) & 0xFF == 27:

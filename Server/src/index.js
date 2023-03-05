@@ -1,12 +1,18 @@
 import { WebSocketServer } from "ws";
 import net from "net";
 
-let game = {
-  players: 0,
-  running: false,
-  socket: null,
-  clients: [null, null],
-};
+let game = null
+
+const initGame = () => {
+  game = {
+    players: 0,
+    running: false,
+    socket: null,
+    clients: [null, null],
+  };
+} 
+
+initGame()
 
 const broacastToClients = (data) =>
   game.clients.forEach((ws) => ws && client.send(JSON.stringify(data)));
@@ -19,6 +25,7 @@ const ss = net.createServer((socket) => {
 
   socket.on("error", (e) => {
     console.log(e);
+    initGame()
   });
 
   socket.on("data", (data) => {
@@ -46,6 +53,7 @@ wss.on("connection", (ws) => {
   if (game.players === 0) {
     ws.player = 0;
     game.players += 1;
+    game.clients[0] = ws 
     const msg = {
       type: "player_connected",
       player: ws.player,
@@ -55,6 +63,7 @@ wss.on("connection", (ws) => {
   } else if (game.players === 1) {
     ws.player = 1;
     game.players += 1;
+    game.clients[0] = ws 
     const msg = {
       type: "player_connected",
       player: ws.player,
@@ -73,6 +82,7 @@ wss.on("connection", (ws) => {
 
   ws.on("close", () => {
     game.players -= 1;
+    game.clients[ws.player] = null 
     game.socket.write(
       JSON.stringify({
         type: "player_disconnected",

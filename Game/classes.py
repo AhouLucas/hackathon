@@ -47,9 +47,9 @@ class DrinkType:
 
 class Drink:
     TYPE = (
-        DrinkType(r"Images/drink0.png", 10),
-        DrinkType(r"Images/drink1.png", 20),
-        DrinkType(r"Images/drink2.png", 30)
+        DrinkType(r"Images/sprites/drink0.png", 10),
+        DrinkType(r"Images/sprites/drink1.png", 20),
+        DrinkType(r"Images/sprites/drink2.png", 30)
     )
     
     def __init__(self, type, position):
@@ -65,3 +65,4 @@ class Drink:
         if self.position[1] > 3 * screen.get_size()[1] // 4:
             self.position[1] -= 10
         self.show(screen)
+ 

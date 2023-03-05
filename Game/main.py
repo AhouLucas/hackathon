@@ -27,8 +27,8 @@ Player1_drinks = []
 Player2_drinks = []
 
 # Images
-background_1 = pg.image.load("Images/background/background1-large.png")
-background_2 = pg.image.load("Images/background/background2-large.png")
+background_1 = pg.image.load("Images/sprites/background1.png")
+background_2 = pg.image.load("Images/sprites/background1.png")
 background_1 = pg.transform.scale(background_1, (WIDTH, HEIGHT))
 background_2 = pg.transform.scale(background_2, (WIDTH, HEIGHT))
 background = [background_1, background_2]
@@ -97,7 +97,6 @@ def drinks_drink(player: int):
             Player_2.drink(drink)
             Player2_drinks.remove(drink)
         Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT]))
-    
 
 
 

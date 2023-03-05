@@ -2,7 +2,6 @@ import { WebSocketServer } from "ws";
 import { createServer } from "https";
 import { readFileSync } from "fs";
 import net from "net";
-import { generatePrimeSync } from "crypto";
 
 let game = null;
 
@@ -20,15 +19,35 @@ initGame();
 const broacastToClients = (data) =>
   game.clients.forEach((ws) => ws && ws.send(JSON.stringify(data)));
 
+const closeClients = () =>
+  game.clients.forEach((ws) => ws && ws.close())
+
 const sendToGame = (data) =>
   game.socket && game.socket.write(JSON.stringify(data));
 const sendToClient = (data, ws) => ws.send(JSON.stringify(data));
+
+const server = createServer({
+  cert: readFileSync(
+    "/etc/letsencrypt/live/guindaillesim.tech/fullchain.pem"
+  ),
+  key: readFileSync(
+    "/etc/letsencrypt/live/guindaillesim.tech/privkey.pem"
+  ),
+});
+const wss = new WebSocketServer({ server });
+
 
 const ss = net.createServer((socket) => {
   game.socket = socket;
 
   socket.on("error", (e) => {
     console.log(e);
+    closeClients();
+    initGame();
+  });
+
+  socket.on("close", () => {
+    closeClients();
     initGame();
   });
 
@@ -50,16 +69,6 @@ const ss = net.createServer((socket) => {
 });
 
 ss.listen(8081);
-
-const server = createServer({
-  cert: readFileSync(
-    "/etc/letsencrypt/live/guindaillesim.tech/fullchain.pem"
-  ),
-  key: readFileSync(
-    "/etc/letsencrypt/live/guindaillesim.tech/privkey.pem"
-  ),
-});
-const wss = new WebSocketServer({ server });
 
 wss.on("connection", (ws) => {
   ws.on("error", console.error);

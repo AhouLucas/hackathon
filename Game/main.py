@@ -131,7 +131,7 @@ def main():
                 drinks_drink(1)
             elif players_state[1] or keys[pg.K_m]:
                 drinks_drink(2)
-
+       
         count_frame += 1
         animate_drinks()
         pg.display.update()

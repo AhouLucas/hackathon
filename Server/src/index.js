@@ -63,7 +63,8 @@ wss.on("connection", (ws) => {
   } else {
     ws.send(
       JSON.stringify({
-        error: "full",
+        type: "error",
+        content: "full",
       })
     );
     ws.close();

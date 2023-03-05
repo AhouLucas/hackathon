@@ -93,6 +93,9 @@ def drinks_drink(player: int):
         # for drink in Player1_drinks:
         #     Player_1.drink(drink)
         #     Player1_drinks.remove(drink)
+        if count_frame - Player_1.lastAddedDrink < 10: return
+        Player_1.lastAddedDrink = count_frame 
+    
         Player1_drinks.append(Drink(randint(0, 2), [WIDTH / 3, HEIGHT]))
         Player_1.drink(Player1_drinks[-1])
         # Player1_drinks.append(Drink(randint(0, 2), [WIDTH / 3, HEIGHT]))
@@ -101,6 +104,9 @@ def drinks_drink(player: int):
         # for drink in Player2_drinks:
         #     Player_2.drink(drink)
         #     Player2_drinks.remove(drink)
+        if count_frame - Player_2.lastAddedDrink < 10: return
+        Player_2.lastAddedDrink = count_frame 
+        
         Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT]))
         Player_2.drink(Player2_drinks[-1])
         # Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT]))

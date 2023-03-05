@@ -43,6 +43,7 @@ class Player:
         self.drunkness_level = Gauge((position[0]-200, position[1]-50), (50, 200), (0, 255, 0), 1000)
         self.animationStatus = Player.initKey
         self.drinkInHand = None
+        self.lastAddedDrink = 0
         
         self.images = {
             "vomit": pg.transform.scale(pg.image.load("Images/sprites/vomit.png"), (self.width, self.height)),
@@ -88,12 +89,13 @@ class Player:
             self.animationStatus -= 1
             
         if self.animationStatus == Player.drinkingKey:
+            self.drunkness_level.add(self.drinkInHand.type.alcohol)
             self.animationStatus = Player.initKey
         
         self.drunkness_level.show(screen)
 
     def drink(self, drink):
-        self.drunkness_level.add(drink.type.alcohol)
+        # self.drunkness_level.add(drink.type.alcohol)
         self.animationStatus = Player.initKey - 1
         # self.drinkInHand = Drink(Drink.TYPE.index(drink.type), drink.position)
         self.drinkInHand = drink

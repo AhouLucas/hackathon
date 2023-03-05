@@ -215,7 +215,7 @@ def main():
         
         consume_data()
         count_time_drinking()
-        print(players_time)
+        print(mic_active)
         pg.display.update()
         clock.tick(60)
             

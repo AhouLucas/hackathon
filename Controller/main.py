@@ -63,7 +63,6 @@ with mp_pose.Pose(
         image[:, :width_cutoff] = s1
         image[:, width_cutoff:] = s2
 
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         # Flip the image horizontally for a selfie-view display.
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

@@ -35,6 +35,12 @@ Player1_drinks = []
 Player2_drinks = []
 players_state = [False, False]
 players_connected = [False, False]
+mic_active = [False, False]
+player_time = [0, 0]
+player1_hold_beer = False
+player2_hold_beer = False
+player1_drinking = False
+player2_drinking = False
 
 # Images
 background_1 = pg.image.load("Images/sprites/background1.png")
@@ -106,27 +112,46 @@ def consume_data():
             players_connected[data["player"]] = True
         elif data["type"] == "player_disconnected":
             players_connected[data["player"]] = False
+        
+        elif data["type"] == "mic_high":
+            mic_active[data["player"]] = True
+        
+        elif data["type"] == "mic_low":
+            mic_active[data["player"]] = False
+
+def count_time_drinking():
+    count1, count2 = 0, 0
+    if mic_active[0]:
+        player_time[0] += 1
+    if mic_active[1]:
+        player_time[1] += 1
+
+    if not mic_active[0]:
+        count1 = player_time[0]
+        player_time[0] = 0
+    if not mic_active[1]:
+        count2 = player_time[1]
+        player_time[1] = 0
+
+    return count1, count2
 
 def main():
-    global running, start, count_frame
+    global running, start, count_frame, player1_hold_beer, player2_hold_beer, socket_data, players_state, player1_drinking, player2_drinking
     play_music('Musics/Start Menu.mp3')
     while running:
-        # Get the user keyboard inputs
-        keys = pg.key.get_pressed() 
-
         # Check for events
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()   
-            elif start == False and all(players_connected):
-                start = True
-                socket_send({"type": "game_start"})
-                pg.mixer.music.stop()
-                play_music('Musics/Gameplay.mp3')
+        
+        if start == False and all(players_connected):
+            start = True
+            socket_send({"type": "game_start"})
+            pg.mixer.music.stop()
+            play_music('Musics/Gameplay.mp3')
 
 
         animate_background()
-        start = True
 
         # Start menu
         if not start:
@@ -134,39 +159,56 @@ def main():
         # Game loop only if start is True
         else:
             
-            if keys[pg.K_a]:
-                Player_1.normal(screen)
-                Player_1.arm(screen)
-            elif keys[pg.K_b]:
-                Player_1.drinking(screen)
-            else:
-                Player_1.normal(screen)
+            count_time_drinking()
+            if players_state[0] and not player1_hold_beer:
+                player1_hold_beer = True
+
+            elif not players_state[0] and player1_hold_beer and not player1_drinking:
+                player1_drinking = True
+            
+            elif player_time[0] > 3 and player1_hold_beer and player1_drinking:
+                player1_hold_beer = False
+                player1_drinking = False
 
 
-            if keys[pg.K_a]:
-                Player_2.normal(screen)
-                Player_2.arm(screen)
-            elif keys[pg.K_b]:
-                Player_2.drinking(screen)
-            else:
-                Player_2.normal(screen)
+            if players_state[1] and not player2_hold_beer:
+                player2_hold_beer = True
 
-                
+            elif not players_state[1] and player2_hold_beer:
+                player2_drinking = True
+            elif player_time[1] > 3 and player2_hold_beer:
+                player2_hold_beer = False
+                player2_drinking = False
+
+
+        if not player1_hold_beer and not player1_drinking:
+            Player_1.normal(screen)
+        elif player1_hold_beer and not player1_drinking:
+            Player_1.normal(screen)
+            Player_1.arm(screen)
+        elif player1_drinking and player1_hold_beer:
+            Player_1.drinking(screen)
+    
+        if not player2_hold_beer and not player2_drinking:
+            Player_2.normal(screen)
+        elif player2_hold_beer and not player2_drinking:
+            Player_2.normal(screen)
+            Player_2.arm(screen)
+        elif player2_drinking and player2_hold_beer:
+            Player_2.drinking(screen)
 
 
         count_frame += 1
         consume_data()
         pg.display.update()
-        clock.tick(10)
+        clock.tick(60)
             
 
 if __name__ == "__main__":
 
     #Threads
-    movement_control_thread = threading.Thread(target=controller_thread, args=(players_state,))
-    socket_read_thread = threading.Thread(target=socket_read, args=(client, socket_data))
-    movement_control_thread.daemon = True
-    socket_read_thread.daemon = True
+    movement_control_thread = threading.Thread(target=controller_thread, args=(players_state,), daemon=True)
+    socket_read_thread = threading.Thread(target=socket_read, args=(client, socket_data), daemon=True)
     movement_control_thread.start()
     socket_read_thread.start()
 

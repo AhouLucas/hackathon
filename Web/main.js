@@ -88,6 +88,7 @@ navigator.mediaDevices
       const audioMeter = Math.sqrt(sum / frequencyRangeData.length);
 
       console.log(audioMeter)
+      console.log(playing)
 
       if (playing) {
         ws.send(

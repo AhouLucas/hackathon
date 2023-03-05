@@ -4,11 +4,9 @@ import json
 
 def socket_read(client, data_list):
     while True:
-        try:
-            data = client.recv(1024).decode()  # receive response
-            data_list.append(json.loads(data))
-        except:
-            pass
+        data = client.recv(1024).decode()  # receive response
+        data_list.append(json.loads(data))
+
     client.close()  # close the connection
 
 if __name__ == '__main__':

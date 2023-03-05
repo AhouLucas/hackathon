@@ -14,6 +14,10 @@ const broacastToClients = (data) =>
 const ss = net.createServer((socket) => {
   game.socket = socket;
 
+  socket.on("error", (e) => {
+    console.log(e)
+  })
+
   socket.on("data", (data) => {
     data = JSON.parse(data);
 

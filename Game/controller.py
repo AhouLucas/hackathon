@@ -6,7 +6,7 @@ def controller_thread(controller_state: list):
     mp_pose = mp.solutions.pose
 
     # For webcam input:
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 
     with mp_pose.Pose(
         min_detection_confidence=0.5,

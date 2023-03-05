@@ -2,6 +2,7 @@ import { WebSocketServer } from "ws";
 import { createServer } from "https";
 import { readFileSync } from "fs";
 import net from "net";
+import { generatePrimeSync } from "crypto";
 
 let game = null;
 
@@ -63,10 +64,20 @@ const wss = new WebSocketServer({ server });
 wss.on("connection", (ws) => {
   ws.on("error", console.error);
 
-  if (game.players < 2) {
-    ws.player = game.players;
+  if (!game.clients[0]) {
+    ws.player = 0;
     game.players += 1;
-    game.clients[game.players] = ws;
+    game.clients[0] = ws;
+    const msg = {
+      type: "player_connected",
+      player: ws.player,
+    };
+    sendToGame(msg);
+    sendToClient(msg, ws);
+  } else if (!game.clients[1]) {
+    ws.player = 1;
+    game.players += 1;
+    game.clients[1] = ws;
     const msg = {
       type: "player_connected",
       player: ws.player,

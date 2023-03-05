@@ -27,8 +27,8 @@ class Player:
     vomitingKey = 90
     initKey = 70
     normalKey = 40
-    armKey = 20
-    drinkingKey = 0
+    armKey = 30
+    drinkingKey = 20
 
     hOffset = -400
     vOffset = -50
@@ -68,8 +68,12 @@ class Player:
             img = self.images["normal"]
             screen.blit(img, (self.position[0] + Player.hOffset, self.position[1] + Player.vOffset))
             
+            self.drinkInHand.position[1] -= 70
+            self.drinkInHand.show(screen)
+            self.drinkInHand.position[1] += 70
+            
             img = self.images["arm"]
-            screen.blit(img, (self.position[0] + Player.hOffset, self.position[1] - 25))
+            screen.blit(img, (self.position[0] + Player.hOffset + 10, self.position[1] + 100))
             
             self.animationStatus -= 1
             
@@ -77,6 +81,10 @@ class Player:
             img = self.images["drinking"]
             screen.blit(img, (self.position[0] + Player.hOffset - 25, self.position[1] - 62))
 
+            self.drinkInHand.position = (300, 300)
+            self.drinkInHand.show(screen)
+            # self.drinkInHand.position[1] += 100
+            
             self.animationStatus -= 1
             
         if self.animationStatus == Player.drinkingKey:
@@ -87,8 +95,8 @@ class Player:
     def drink(self, drink):
         self.drunkness_level.add(drink.type.alcohol)
         self.animationStatus = Player.initKey - 1
-        print(self.animationStatus)
         # self.drinkInHand = Drink(Drink.TYPE.index(drink.type), drink.position)
+        self.drinkInHand = drink
         
     def vomit(self):
         self.animationStatus = Player.vomitingKey

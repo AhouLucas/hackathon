@@ -1,8 +1,10 @@
 import pygame as pg
 from random import randint
 from classes import Player, Drink
+from controller import controller_thread
+import threading, sys, time
 import time
-from controller import controller
+# from Controller import controller
 
 #### Pygame Initialisation ####
 
@@ -27,10 +29,11 @@ count_frame = 0 # Used to get the frame number for timing purposes
 Player_1, Player_2 = Player((WIDTH/3, HEIGHT/3), "Player 1"), Player((2*WIDTH/3, HEIGHT/3), "Player 2")
 Player1_drinks = []
 Player2_drinks = []
+players_state = [False, False]
 
 # Images
-background_1 = pg.image.load("Images/background/background1-large.png")
-background_2 = pg.image.load("Images/background/background2-large.png")
+background_1 = pg.image.load("Images/sprites/background1.png")
+background_2 = pg.image.load("Images/sprites/background2.png")
 background_1 = pg.transform.scale(background_1, (WIDTH, HEIGHT))
 background_2 = pg.transform.scale(background_2, (WIDTH, HEIGHT))
 background = [background_1, background_2]
@@ -75,11 +78,9 @@ def animate_background():
     
 def animate_drinks():
     for drink in Player1_drinks:
-        if drink.drunk: Player1_drinks.remove(drink)
         drink.animate(screen)
             
     for drink in Player2_drinks:
-        if drink.drunk: Player1_drinks.remove(drink)
         drink.animate(screen)
 
 def write_to_screen(text, position, font_size, color):
@@ -99,9 +100,6 @@ def drinks_drink(player: int):
             Player_2.drink(drink)
             Player2_drinks.remove(drink)
         Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT]))
-    
-
-
 
 def main():
     global running, start, count_frame
@@ -113,8 +111,7 @@ def main():
         # Check for events
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                pg.quit()
-                return
+                pg.quit()   
             elif start == False and keys[pg.K_SPACE]:
                 start = True
                 pg.mixer.music.stop()
@@ -130,9 +127,9 @@ def main():
         else:
             Player_1.show(screen)
             Player_2.show(screen)
-            if keys[pg.K_z]:
+            if players_state[0] or keys[pg.K_z]:
                 drinks_drink(1)
-            elif keys[pg.K_m]:
+            elif players_state[1] or keys[pg.K_m]:
                 drinks_drink(2)
 
         count_frame += 1
@@ -142,4 +139,6 @@ def main():
             
 
 if __name__ == "__main__":
+    thread1 = threading.Thread(target=controller_thread, args=(players_state,))
+    thread1.start()
     main()  

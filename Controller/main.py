@@ -18,7 +18,7 @@ with mp_pose.Pose(
     time_elapsed = time.time() - prev
     res, image = cap.read()
 
-    if time_elapsed > 1./frame_rate:
+    if time_elapsed > 1/frame_rate:
         prev = time.time()
 
         success, image = cap.read()
@@ -40,34 +40,40 @@ with mp_pose.Pose(
         s1 = image[:, :width_cutoff]
         s2 = image[:, width_cutoff:]
 
-        results = pose.process(s1)
-
+        results_1 = pose.process(s1)
         # Draw the pose annotation on the image.
         image.flags.writeable = True
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         mp_drawing.draw_landmarks(
             s1,
-            results.pose_landmarks,
+            results_1.pose_landmarks,
             mp_pose.POSE_CONNECTIONS,
             landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
 
-        results = pose.process(s2)
-
+        results_2 = pose.process(s2)
         # Draw the pose annotation on the image.
         image.flags.writeable = True
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         mp_drawing.draw_landmarks(
             s2,
-            results.pose_landmarks,
+            results_2.pose_landmarks,
             mp_pose.POSE_CONNECTIONS,
             landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
         
         image[:, :width_cutoff] = s1
         image[:, width_cutoff:] = s2
 
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         # Flip the image horizontally for a selfie-view display.
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         cv2.imshow('MediaPipe Pose', cv2.flip(image, 1))
+
+        if results_2.pose_landmarks != None and results_2.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].z < -2 and results_2.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].y > 0.7:
+            print("PERSON 2 GRABS A DRINK")
+        if results_1.pose_landmarks != None and results_1.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].z < -2 and results_1.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].y > 0.7:
+            print("PERSON 1 GRABS A DRINK")
+
         if cv2.waitKey(5) & 0xFF == 27:
             break
 cap.release()

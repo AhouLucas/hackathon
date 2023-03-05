@@ -1,6 +1,8 @@
 import pygame as pg
 from random import randint
 from classes import Player, Drink
+import time
+from controller import controller
 
 #### Pygame Initialisation ####
 

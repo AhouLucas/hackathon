@@ -83,7 +83,7 @@ navigator.mediaDevices
       // audioMeter varies from 0 to 10
       const audioMeter = Math.sqrt(sum / frequencyRangeData.length);
 
-      mic_high = audioMeter > 5;
+      console.log(audioMeter)
 
       if (playing) {
         ws.send(

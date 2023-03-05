@@ -47,7 +47,6 @@ const ss = net.createServer((socket) => {
   });
 
   socket.on("close", () => {
-    console.log(e);
     closeClients();
     initGame();
   });

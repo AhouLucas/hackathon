@@ -93,7 +93,7 @@ navigator.mediaDevices
       if (playing) {
         ws.send(
           JSON.stringify({
-            type: audioMeter > 11 ? "mic_high": "mic_low"
+            type: audioMeter > 7 ? "mic_high": "mic_low"
           })
         );
       }

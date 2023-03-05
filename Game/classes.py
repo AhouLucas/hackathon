@@ -35,8 +35,9 @@ class Player:
         self.pseudo = pseudo
         self.image = image
         self.dead = False
-        self.rect = pg.Rect(position, (50, 100))
-        self.drunkness_level = Gauge((position[0]-100, position[1]), (50, 200), (0, 255, 0), 1000)
+        self.width, self.height = 850, 650
+        self.rect = pg.Rect(position, (self.width, self.height))
+        self.drunkness_level = Gauge((position[0]-200, position[1]-50), (50, 200), (0, 255, 0), 1000)
         self.animationStatus = Player.initKey
         self.drinkInHand = None
 
@@ -46,7 +47,7 @@ class Player:
             if self.drinkInHand: self.drinkInHand.show(screen)
             
             img = pg.image.load("Images/sprites/vomit.png")
-            img = pg.transform.scale(img, (650, 500))
+            img = pg.transform.scale(img, (self.width, self.height))
             screen.blit(img, (self.position[0] - 150, self.position[1] + 74))
             
             self.animationStatus -= 1
@@ -54,7 +55,7 @@ class Player:
         if Player.normalKey <= self.animationStatus <= Player.initKey:
             
             img = pg.image.load("Images/sprites/normal.png")
-            img = pg.transform.scale(img, (650, 500))
+            img = pg.transform.scale(img, (self.width, self.height))
             screen.blit(img, (self.position[0] - 150, self.position[1] + 74))
         
             if self.animationStatus < Player.initKey: self.animationStatus -= 1
@@ -62,11 +63,11 @@ class Player:
         elif Player.armKey <= self.animationStatus < Player.normalKey:
             
             img = pg.image.load("Images/sprites/normal.png")
-            img = pg.transform.scale(img, (650, 500))
+            img = pg.transform.scale(img, (self.width, self.height))
             screen.blit(img, (self.position[0] - 150, self.position[1] + 74))
             
             img = pg.image.load("Images/sprites/arm.png")
-            img = pg.transform.scale(img, (650, 500))
+            img = pg.transform.scale(img, (self.width, self.height))
             screen.blit(img, (self.position[0] - 150, self.position[1] + 74))
             
             self.animationStatus -= 1
@@ -75,7 +76,7 @@ class Player:
             self.drinkInHand.img = pg.transform.flip(self.drinkInHand.img, False, True)
             
             img = pg.image.load("Images/sprites/drinking.png")
-            img = pg.transform.scale(img, (650, 500))
+            img = pg.transform.scale(img, (self.width, self.height))
             screen.blit(img, (self.position[0] - 150, self.position[1] + 74))
 
             self.animationStatus -= 1

@@ -74,7 +74,7 @@ wss.on("connection", (ws) => {
     };
     sendToGame(msg);
     sendToClient(msg, ws);
-  } else if (!game.player[0]) {
+  } else if (!game.clients[0]) {
     ws.player = 0;
     game.players += 1;
     game.clients[0] = ws;
@@ -84,7 +84,7 @@ wss.on("connection", (ws) => {
     };
     sendToGame(msg);
     sendToClient(msg, ws);
-  } else if (!game.player[1]) {
+  } else if (!game.clients[1]) {
     ws.player = 1;
     game.players += 1;
     game.clients[1] = ws;

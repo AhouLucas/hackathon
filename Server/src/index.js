@@ -1,7 +1,7 @@
 import { WebSocketServer } from "ws";
 import net from "net";
 
-let game = null
+let game = null;
 
 const initGame = () => {
   game = {
@@ -10,14 +10,15 @@ const initGame = () => {
     socket: null,
     clients: [null, null],
   };
-} 
+};
 
-initGame()
+initGame();
 
 const broacastToClients = (data) =>
   game.clients.forEach((ws) => ws && ws.send(JSON.stringify(data)));
 
-const sendToGame = (data) => game.socket.write(JSON.stringify(data));
+const sendToGame = (data) =>
+  game.socket && game.socket.write(JSON.stringify(data));
 const sendToClient = (data, ws) => ws.send(JSON.stringify(data));
 
 const ss = net.createServer((socket) => {
@@ -25,20 +26,20 @@ const ss = net.createServer((socket) => {
 
   socket.on("error", (e) => {
     console.log(e);
-    initGame()
+    initGame();
   });
 
   socket.on("data", (data) => {
     data = JSON.parse(data);
-    console.log(data)
+    console.log(data);
 
     if (data) {
       switch (data.type) {
         case "game_start":
-          game.running = true
+          game.running = true;
           broacastToClients(data);
         case "game_end":
-          game.running = false
+          game.running = false;
           broacastToClients(data);
       }
     }
@@ -55,7 +56,7 @@ wss.on("connection", (ws) => {
   if (game.players === 0) {
     ws.player = 0;
     game.players += 1;
-    game.clients[0] = ws 
+    game.clients[0] = ws;
     const msg = {
       type: "player_connected",
       player: ws.player,
@@ -65,7 +66,7 @@ wss.on("connection", (ws) => {
   } else if (game.players === 1) {
     ws.player = 1;
     game.players += 1;
-    game.clients[0] = ws 
+    game.clients[0] = ws;
     const msg = {
       type: "player_connected",
       player: ws.player,
@@ -84,27 +85,22 @@ wss.on("connection", (ws) => {
 
   ws.on("close", () => {
     game.players -= 1;
-    game.clients[ws.player] = null 
-    game.socket.write(
-      JSON.stringify({
-        type: "player_disconnected",
-        player: ws.player,
-      })
-    );
+    game.clients[ws.player] = null;
+
+    sendToGame({
+      type: "player_disconnected",
+      player: ws.player,
+    });
   });
 
   ws.on("message", (data) => {
     data = JSON.parse(data);
     if (data) {
       if (data.type === "mic_high") {
-        if (game.socket) {
-          game.socket.write(
-            JSON.stringify({
-              type: "mic_high",
-              player: ws.player,
-            })
-          );
-        }
+        sendToGame({
+          type: "mic_high",
+          player: ws.player,
+        });
       }
     }
   });

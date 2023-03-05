@@ -2,8 +2,7 @@ let playing = false;
 let player = -1;
 let mic_high = false;
 const startBtn = document.getElementById("start-btn");
-const logSpan = document.getElementById("log")
-const soundBar = document.getElementById("sound-bar")
+const logSpan = document.getElementById("log");
 
 console.log(startBtn);
 
@@ -14,7 +13,7 @@ startBtn.addEventListener("click", () => {
 
   ws.onopen = () => {
     console.log("Connected to ws!");
-    startBtn.style.display = "none"
+    startBtn.style.display = "none";
   };
 
   ws.onerror = (e) => {
@@ -48,15 +47,20 @@ startBtn.addEventListener("click", () => {
           "log"
         ).innerHTML = `Game started!\nYou are player ${player + 1}.`;
         logSpan.className = "nes-text is-success";
-        soundBar.style.display = "inline-block"
-        playing = true
+        playing = true;
         break;
       case "game_end":
-        playing = false
+        playing = false;
+
+        document.getElementById("log").innerHTML = `You ${
+          msg.winner === player ? "win" : "loose"
+        }!`;
+        logSpan.className = `nes-text is-${
+          msg.winner === player ? "success" : "error"
+        }`;
         break;
       default:
-        logSpan.innerHTML =
-          "Unknown message from server!";
+        logSpan.innerHTML = "Unknown message from server!";
         logSpan.className = "nes-text is-error";
         break;
     }
@@ -89,12 +93,10 @@ navigator.mediaDevices
       // audioMeter varies from 0 to 10
       const audioMeter = Math.sqrt(sum / frequencyRangeData.length);
 
-      soundBar.value = audioMeter*100
-
       if (playing) {
         ws.send(
           JSON.stringify({
-            type: audioMeter > 7.2 ? "mic_high": "mic_low"
+            type: audioMeter > 7.2 ? "mic_high" : "mic_low",
           })
         );
       }

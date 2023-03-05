@@ -19,23 +19,17 @@ initGame();
 const broacastToClients = (data) =>
   game.clients.forEach((ws) => ws && ws.send(JSON.stringify(data)));
 
-const closeClients = () =>
-  game.clients.forEach((ws) => ws && ws.close())
+const closeClients = () => game.clients.forEach((ws) => ws && ws.close());
 
 const sendToGame = (data) =>
   game.socket && game.socket.write(JSON.stringify(data));
 const sendToClient = (data, ws) => ws.send(JSON.stringify(data));
 
 const server = createServer({
-  cert: readFileSync(
-    "/etc/letsencrypt/live/guindaillesim.tech/fullchain.pem"
-  ),
-  key: readFileSync(
-    "/etc/letsencrypt/live/guindaillesim.tech/privkey.pem"
-  ),
+  cert: readFileSync("/etc/letsencrypt/live/guindaillesim.tech/fullchain.pem"),
+  key: readFileSync("/etc/letsencrypt/live/guindaillesim.tech/privkey.pem"),
 });
 const wss = new WebSocketServer({ server });
-
 
 const ss = net.createServer((socket) => {
   game.socket = socket;
@@ -52,19 +46,21 @@ const ss = net.createServer((socket) => {
   });
 
   socket.on("data", (data) => {
-    data = JSON.parse(data);
-    console.log(data);
+    try {
+      data = JSON.parse(data);
+      console.log(data);
 
-    if (data) {
-      switch (data.type) {
-        case "game_start":
-          game.running = true;
-          broacastToClients(data);
-        case "game_end":
-          game.running = false;
-          broacastToClients(data);
+      if (data) {
+        switch (data.type) {
+          case "game_start":
+            game.running = true;
+            broacastToClients(data);
+          case "game_end":
+            game.running = false;
+            broacastToClients(data);
+        }
       }
-    }
+    } catch {}
   });
 });
 
@@ -114,20 +110,22 @@ wss.on("connection", (ws) => {
   });
 
   ws.on("message", (data) => {
-    data = JSON.parse(data);
-    if (data) {
-      if (data.type === "mic_high") {
-        sendToGame({
-          type: "mic_high",
-          player: ws.player,
-        });
-      } else if (data.type === "mic_low") {
-        sendToGame({
-          type: "mic_low",
-          player: ws.player,
-        });
+    try {
+      data = JSON.parse(data);
+      if (data) {
+        if (data.type === "mic_high") {
+          sendToGame({
+            type: "mic_high",
+            player: ws.player,
+          });
+        } else if (data.type === "mic_low") {
+          sendToGame({
+            type: "mic_low",
+            player: ws.player,
+          });
+        }
       }
-    }
+    } catch {}
   });
 });
 

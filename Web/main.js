@@ -24,6 +24,7 @@ startBtn.addEventListener("click", () => {
 
   ws.onmessage = (msg) => {
     msg = JSON.parse(msg)
+    console.log(msg)
 
     switch (msg.type) {
       case "error":

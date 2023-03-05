@@ -45,7 +45,7 @@ wss.on("connection", (ws) => {
   if (game.players === 0) {
     ws.player = 0;
     game.players += 1;
-    msg = {
+    const msg = {
       type: "player_connected",
       player: ws.player,
     };
@@ -54,7 +54,7 @@ wss.on("connection", (ws) => {
   } else if (game.players === 1) {
     ws.player = 1;
     game.players += 1;
-    msg = {
+    const msg = {
       type: "player_connected",
       player: ws.player,
     };

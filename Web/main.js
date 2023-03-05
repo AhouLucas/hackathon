@@ -76,13 +76,13 @@ navigator.mediaDevices
       const audioMeter = Math.sqrt(sum / frequencyRangeData.length);
 
       console.log(audioMeter);
-      if (audioMeter > 8 && playing) {
-        ws.send(
-          JSON.stringify({
-            type: "mic_high",
-          })
-        );
-      }
+      //if (audioMeter > 8 && playing) {
+      ws.send(
+        JSON.stringify({
+          type: "mic_high",
+        })
+      );
+      //}
     }, 100);
   })
   .catch((err) => {

@@ -1,17 +1,26 @@
 import { WebSocketServer } from "ws";
+import { createServer } from "https";
+import { readFileSync } from "fs";
 import net from "net";
 
-let game = {
-  players: 0,
-  running: false,
-  socket: null,
-  clients: [null, null],
+let game = null;
+
+const initGame = () => {
+  game = {
+    players: 0,
+    running: false,
+    socket: null,
+    clients: [null, null],
+  };
 };
 
-const broacastToClients = (data) =>
-  game.clients.forEach((ws) => ws && client.send(JSON.stringify(data)));
+initGame();
 
-const sendToGame = (data) => game.socket.write(JSON.stringify(data));
+const broacastToClients = (data) =>
+  game.clients.forEach((ws) => ws && ws.send(JSON.stringify(data)));
+
+const sendToGame = (data) =>
+  game.socket && game.socket.write(JSON.stringify(data));
 const sendToClient = (data, ws) => ws.send(JSON.stringify(data));
 
 const ss = net.createServer((socket) => {
@@ -19,16 +28,20 @@ const ss = net.createServer((socket) => {
 
   socket.on("error", (e) => {
     console.log(e);
+    initGame();
   });
 
   socket.on("data", (data) => {
     data = JSON.parse(data);
+    console.log(data);
 
     if (data) {
       switch (data.type) {
         case "game_start":
+          game.running = true;
           broacastToClients(data);
         case "game_end":
+          game.running = false;
           broacastToClients(data);
       }
     }
@@ -37,7 +50,15 @@ const ss = net.createServer((socket) => {
 
 ss.listen(8081);
 
-const wss = new WebSocketServer({ port: 8080 });
+const server = createServer({
+  cert: readFileSync(
+    "/etc/letsencrypt/live/guindaille-sim.duckdns.org/fullchain.pem"
+  ),
+  key: readFileSync(
+    "/etc/letsencrypt/live/guindaille-sim.duckdns.org/privkey.pem"
+  ),
+});
+const wss = new WebSocketServer({ server });
 
 wss.on("connection", (ws) => {
   ws.on("error", console.error);
@@ -45,6 +66,7 @@ wss.on("connection", (ws) => {
   if (game.players === 0) {
     ws.player = 0;
     game.players += 1;
+    game.clients[0] = ws;
     const msg = {
       type: "player_connected",
       player: ws.player,
@@ -54,6 +76,7 @@ wss.on("connection", (ws) => {
   } else if (game.players === 1) {
     ws.player = 1;
     game.players += 1;
+    game.clients[0] = ws;
     const msg = {
       type: "player_connected",
       player: ws.player,
@@ -72,26 +95,23 @@ wss.on("connection", (ws) => {
 
   ws.on("close", () => {
     game.players -= 1;
-    game.socket.write(
-      JSON.stringify({
-        type: "player_disconnected",
-        player: ws.player,
-      })
-    );
+    game.clients[ws.player] = null;
+
+    sendToGame({
+      type: "player_disconnected",
+      player: ws.player,
+    });
   });
 
   ws.on("message", (data) => {
+    console.log(`ws (${ws.player}): ${data}`);
     data = JSON.parse(data);
     if (data) {
       if (data.type === "mic_high") {
-        if (game.socket) {
-          game.socket.write(
-            JSON.stringify({
-              type: "mic_high",
-              player: ws.player,
-            })
-          );
-        }
+        sendToGame({
+          type: "mic_high",
+          player: ws.player,
+        });
       }
     }
   });

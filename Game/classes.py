@@ -48,19 +48,19 @@ class Player:
             "drinking": pg.transform.scale(pg.image.load("Images/sprites/drinking-with-glass.png"), (self.width, self.height)),
         }
 
-    def show(self, screen):
-        if Player.initKey < self.animationStatus <= Player.vomitingKey:
-            img = self.images["vomit"]
-            screen.blit(img, (self.position[0], self.position[1]))
-            
-            self.animationStatus -= 1
+    def normal(self, screen):
+        img = self.images["normal"]
+        screen.blit(img, (self.position[0], self.position[1]))
+
+    def arm(self, screen):
+        img = self.images["arm"]
+        screen.blit(img, (self.position[0], self.position[1]))
+
+    def drinking(self, screen):
+        img = self.images["drinking"]
+        screen.blit(img, (self.position[0], self.position[1]))
         
-        if Player.normalKey <= self.animationStatus <= Player.initKey:
-            img = self.images["normal"]
-            screen.blit(img, (self.position[0], self.position[1]))
-        
-            if self.animationStatus < Player.initKey: self.animationStatus -= 1
-            
+"""            
         if Player.armKey <= self.animationStatus < Player.normalKey:
             img = self.images["normal"]
             screen.blit(img, (self.position[0], self.position[1]))
@@ -125,4 +125,4 @@ class Drink:
         #if self.position[1] > 3 * screen.get_size()[1] // 5:
         #    self.position[1] -= 15
         #self.show(screen)
- 
+ """

@@ -3,6 +3,9 @@ Ce jeu a pour but de tenir plus longtemps que son adversaire en descente d'alcoo
 
 - Tendre le bras à l'horizontale pour attraper la boisson
 - Porter le téléphone à sa bouche et aspirer dans le microphone avec tonus pour siffler la bouteille le plus efficacement possible
-- S'arcbouter pour vomir et faire baisser son niveau d'alcoolémie avant qu'il atteigne un seuil critique. Et oui ! Si ce n'était que "boire" le plus vite possible, il n'y aurait aucun challenge! Le coma éthylique en résultant provoque la fin de partie du joueur ayant trop abuser de la bibine.  
 
 Celui qui maitrisera au mieux ces précepes se verra couronné grand champion du CI ! 
+
+## Features à venir
+- Diversité de bières
+- S'arcbouter pour vomir et faire baisser son niveau d'alcoolémie avant qu'il atteigne un seuil critique. Et oui ! Si ce n'était que "boire" le plus vite possible, il n'y aurait aucun challenge! Le coma éthylique en résultant provoque la fin de partie du joueur ayant trop abuser de la bibine.  

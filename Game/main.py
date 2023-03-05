@@ -1,6 +1,6 @@
 import pygame as pg
 from random import randint
-from classes import Player, Drink
+from classes import Player
 from controller import controller_thread
 from network import socket_read
 import threading, sys, time
@@ -35,8 +35,6 @@ Player1_drinks = []
 Player2_drinks = []
 players_state = [False, False]
 players_connected = [False, False]
-mic_active = [False, False]
-players_time = [0, 0]
 
 # Images
 background_1 = pg.image.load("Images/sprites/background1.png")
@@ -90,71 +88,24 @@ def animate_background():
 
     screen.blit(background[0], (0,0))
     
-def animate_drinks():
-    for drink in Player1_drinks:
-        drink.animate(screen)
-            
-    for drink in Player2_drinks:
-        drink.animate(screen)
 
 def write_to_screen(text, position, font_size, color):
     font = pg.font.Font(r"Fonts/font.ttf", font_size)
     text = font.render(text, True, color)
     screen.blit(text, position)
 
-def drinks_drink(player: int):
-    if player == 1:
-        pass
-        #for drink in Player1_drinks:
-            #Player_1.drink(drink)
-            #Player1_drinks.remove(drink)
-            #Player1_drinks.append(Drink(0, [-80, -HEIGHT/2]) )
-            #Player_1.drink(Player1_drinks[-1])
-            #Player1_drinks.append(Drink(randint(0, 2), [WIDTH / 3, HEIGHT]))
-        
-    elif player == 2:
-        # for drink in Player2_drinks:
-        #     Player_2.drink(drink)
-        #     Player2_drinks.remove(drink)
-        Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT/2]))
-        Player_2.drink(Player2_drinks[-1])
-        # Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT]))
-
 def socket_send(data):
     data = json.dumps(data)
     client.send(bytes(data, "utf-8"))
 
 def consume_data():
-    global socket_data, players_connected, mic_active
+    global socket_data
     while len(socket_data):
         data = socket_data.pop(0)
         if data["type"] == "player_connected":
             players_connected[data["player"]] = True
         elif data["type"] == "player_disconnected":
             players_connected[data["player"]] = False
-
-        elif data["type"] == "mic_high":
-            mic_active[data["player"]] = True
-        elif data["type"] == "mic_low":
-            mic_active[data["player"]] = False
-
-def count_drink_time():
-    global players_time
-    count1, count2 = 0, 0
-    if mic_active[0]:
-        players_time[0] += 1
-    if mic_active[1]:
-        players_time[1] += 1
-
-    if not mic_active[0]:
-        count1 = players_time[0]
-        players_time[0] = 0
-    if not mic_active[1]:
-        count2 = players_time[1]
-        players_time[1] = 0
-
-    return count1, count2
-
 
 def main():
     global running, start, count_frame
@@ -163,47 +114,59 @@ def main():
         # Get the user keyboard inputs
         keys = pg.key.get_pressed() 
 
-        if keys[pg.K_ESCAPE]:
-            running = False
-            pg.quit()  
-
-        if start == False and all(players_connected):
-            start = True
-            print("All players connected")
-            socket_send({"type": "game_start"})
-            pg.mixer.music.stop()
-            play_music('Musics/Gameplay.mp3')
+        # Check for events
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()   
+            elif start == False and all(players_connected):
+                start = True
+                socket_send({"type": "game_start"})
+                pg.mixer.music.stop()
+                play_music('Musics/Gameplay.mp3')
 
 
         animate_background()
+        start = True
+
         # Start menu
         if not start:
             start_menu()
         # Game loop only if start is True
         else:
-            Player_1.show(screen)
-            Player_2.show(screen)
-            count_drink_time()
-            if (players_state[0] or keys[pg.K_z]) and players_time[0] > 10:
-                Player1_drinks.append(Drink(0, [-80, -HEIGHT/2]) )
-                Player_1.drink(Player1_drinks[-1])
+            
+            if keys[pg.K_a]:
+                Player_1.normal(screen)
+                Player_1.arm(screen)
+            elif keys[pg.K_b]:
+                Player_1.drinking(screen)
+            else:
+                Player_1.normal(screen)
 
-            elif (players_state[1] or keys[pg.K_m]) and players_time[1] > 10:
-                Player2_drinks.append(Drink(0, [-80, -HEIGHT/2]) )
-                Player_2.drink(Player1_drinks[-1])
+
+            if keys[pg.K_a]:
+                Player_2.normal(screen)
+                Player_2.arm(screen)
+            elif keys[pg.K_b]:
+                Player_2.drinking(screen)
+            else:
+                Player_2.normal(screen)
+
+                
+
 
         count_frame += 1
-        animate_drinks()
         consume_data()
         pg.display.update()
-        clock.tick(60)
+        clock.tick(10)
             
 
 if __name__ == "__main__":
 
     #Threads
-    movement_control_thread = threading.Thread(target=controller_thread, args=(players_state,), daemon=True)
-    socket_read_thread = threading.Thread(target=socket_read, args=(client, socket_data), daemon=True)
+    movement_control_thread = threading.Thread(target=controller_thread, args=(players_state,))
+    socket_read_thread = threading.Thread(target=socket_read, args=(client, socket_data))
+    movement_control_thread.daemon = True
+    socket_read_thread.daemon = True
     movement_control_thread.start()
     socket_read_thread.start()
 

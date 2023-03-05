@@ -52,10 +52,10 @@ ss.listen(8081);
 
 const server = createServer({
   cert: readFileSync(
-    "/etc/letsencrypt/live/guindaille-sim.duckdns.org/fullchain.pem"
+    "/etc/letsencrypt/live/guindaillesim.tech/fullchain.pem"
   ),
   key: readFileSync(
-    "/etc/letsencrypt/live/guindaille-sim.duckdns.org/privkey.pem"
+    "/etc/letsencrypt/live/guindaillesim.tech/privkey.pem"
   ),
 });
 const wss = new WebSocketServer({ server });

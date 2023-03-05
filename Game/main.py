@@ -29,10 +29,12 @@ start = False
 count_frame = 0 # Used to get the frame number for timing purposes
 
 # Players
-Player_1, Player_2 = Player((WIDTH/3, HEIGHT/3), "Player 1"), Player((2*WIDTH/3, HEIGHT/3), "Player 2")
+Player_1, Player_2 = Player((0, HEIGHT/3),(WIDTH, HEIGHT), "Player 1"), Player((2*WIDTH/3, HEIGHT/3),(WIDTH,HEIGHT), "Player 2")
 Player1_drinks = []
 Player2_drinks = []
 players_state = [False, False]
+players_time = [0, 0]
+mic_active = [False, False]
 players_connected = [False, False]
 
 # Images
@@ -122,6 +124,23 @@ def drinks_drink(player: int):
         Player_2.drink(Player2_drinks[-1])
         # Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT]))
 
+def count_time_drinking():
+    global count_frame, players_state, players_time
+    count1, count2 = 0, 0
+    if mic_active[0]:
+        players_time[0] += 1
+    if mic_active[1]:
+        players_time[1] += 1
+    
+    if not mic_active[0]:
+        count1 = players_time[0]
+        players_time[0] = 0
+    if not mic_active[1]:
+        count2 = players_time[1]
+        players_time[1] = 0
+
+    return count1, count2
+
 def socket_send(data):
     data = json.dumps(data)
     client.send(bytes(data, "utf-8"))
@@ -130,10 +149,18 @@ def consume_data():
     global socket_data
     while len(socket_data):
         data = socket_data.pop(0)
+
         if data["type"] == "player_connected":
             players_connected[data["player"]] = True
+
         elif data["type"] == "player_disconnected":
             players_connected[data["player"]] = False
+        
+        elif data["type"] == "mic_high":
+            mic_active[data["player"]] = True
+        
+        elif data["type"] == "mic_low":
+            mic_active[data["player"]] = False
 
 def main():
     global running, start, count_frame
@@ -147,15 +174,15 @@ def main():
         # Get the user keyboard inputs
         keys = pg.key.get_pressed() 
 
-        # Check for events
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                pg.quit()   
-            elif start == False and all(players_connected):
-                start = True
-                socket_send({"type": "game_start"})
-                pg.mixer.music.stop()
-                play_music('Musics/Gameplay.mp3')
+
+        if keys[pg.K_ESCAPE]:
+            running = False
+            pg.quit()   
+        elif start == False and all(players_connected):
+            start = True
+            socket_send({"type": "game_start"})
+            pg.mixer.music.stop()
+            play_music('Musics/Gameplay.mp3')
 
 
         animate_background()
@@ -187,6 +214,8 @@ def main():
             pg.quit()
         
         consume_data()
+        count_time_drinking()
+        print(players_time)
         pg.display.update()
         clock.tick(60)
             
@@ -194,8 +223,8 @@ def main():
 if __name__ == "__main__":
 
     #Threads
-    movement_control_thread = threading.Thread(target=controller_thread, args=(players_state,))
-    socket_read_thread = threading.Thread(target=socket_read, args=(client, socket_data))
+    movement_control_thread = threading.Thread(target=controller_thread, args=(players_state,), daemon=True)
+    socket_read_thread = threading.Thread(target=socket_read, args=(client, socket_data),daemon=True)
     movement_control_thread.start()
     socket_read_thread.start()
 

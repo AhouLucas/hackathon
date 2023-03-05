@@ -36,12 +36,12 @@ def controller_thread(controller_state: list):
             results_2 = pose.process(s2)
 
 
-            if results_1.pose_landmarks != None and results_1.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].z < -2 and results_1.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].y > 0.7:
+            if results_1.pose_landmarks != None and results_1.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].z < -1.8 and results_1.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].y > 0.6:
                 controller_state[0] = True	
             else:
                 controller_state[0] = False
 
-            if results_2.pose_landmarks != None and results_2.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].z < -2 and results_2.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].y > 0.7:
+            if results_2.pose_landmarks != None and results_2.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].z < -1.8 and results_2.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].y > 0.6:
                 controller_state[1] = True
             else:
                 controller_state[1] = False

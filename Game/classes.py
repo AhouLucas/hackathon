@@ -30,16 +30,17 @@ class Player:
     armKey = 30
     drinkingKey = 20
 
-    hOffset = -400
-    vOffset = -50
+    hOffset = 0
+    vOffset = 0
 
-    def __init__(self, position, pseudo, image=None, victory_scream=None):
-        self.position = position
+    def __init__(self, position,size, pseudo, image=None, victory_scream=None):
         self.pseudo = pseudo
         self.image = image
         self.dead = False
-        self.width, self.height = 850, 650
+        self.width, self.height = size
         self.rect = pg.Rect(position, (self.width, self.height))
+        self.rect.center = position
+        self.position = self.rect.center
         self.drunkness_level = Gauge((position[0]-200, position[1]-50), (50, 200), (0, 255, 0), 1000)
         self.animationStatus = Player.initKey
         self.drinkInHand = None

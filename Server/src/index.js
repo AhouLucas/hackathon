@@ -114,7 +114,6 @@ wss.on("connection", (ws) => {
   });
 
   ws.on("message", (data) => {
-    console.log(`ws (${ws.player}): ${data}`);
     data = JSON.parse(data);
     if (data) {
       if (data.type === "mic_high") {

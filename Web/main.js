@@ -3,6 +3,7 @@ let player = -1;
 let mic_high = false;
 const startBtn = document.getElementById("start-btn");
 const logSpan = document.getElementById("log")
+const soundBar = document.getElementById("sound-bar")
 
 console.log(startBtn);
 
@@ -47,6 +48,7 @@ startBtn.addEventListener("click", () => {
           "log"
         ).innerHTML = `Game started!\nYou are player ${player + 1}.`;
         logSpan.className = "nes-text is-success";
+        soundBar.style.display = "inline-block"
         playing = true
         break;
       case "game_end":
@@ -87,7 +89,7 @@ navigator.mediaDevices
       // audioMeter varies from 0 to 10
       const audioMeter = Math.sqrt(sum / frequencyRangeData.length);
 
-      console.log(audioMeter)
+      soundBar.value = audioMeter*100
 
       if (playing) {
         ws.send(
@@ -96,7 +98,7 @@ navigator.mediaDevices
           })
         );
       }
-    }, 300);
+    }, 100);
   })
   .catch((err) => {
     console.error(`you got an error: ${err}`);

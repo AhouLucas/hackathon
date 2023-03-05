@@ -7,7 +7,7 @@ console.log(startBtn);
 let ws = null;
 
 startBtn.addEventListener("click", () => {
-  ws = new WebSocket("ws://146.190.125.98:8080");
+  ws = new WebSocket("wss://guindaille-sim.duckdns.org:8080");
 
   ws.onopen = () => {
     console.log("Connected to ws!");

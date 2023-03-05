@@ -1,4 +1,5 @@
 import { WebSocketServer } from "ws";
+import { createServer } from "https";
 import net from "net";
 
 let game = null;
@@ -48,7 +49,11 @@ const ss = net.createServer((socket) => {
 
 ss.listen(8081);
 
-const wss = new WebSocketServer({ port: 8080 });
+const server = createServer({
+  cert: readFileSync("/etc/letsencrypt/live/guindaille-sim.duckdns.org/fullchain.pem"),
+  key: readFileSync("/etc/letsencrypt/live/guindaille-sim.duckdns.org/privkey.pem"),
+});
+const wss = new WebSocketServer({ server });
 
 wss.on("connection", (ws) => {
   ws.on("error", console.error);
@@ -94,7 +99,7 @@ wss.on("connection", (ws) => {
   });
 
   ws.on("message", (data) => {
-    console.log(`ws (${ws.player}): ${data}`)
+    console.log(`ws (${ws.player}): ${data}`);
     data = JSON.parse(data);
     if (data) {
       if (data.type === "mic_high") {

@@ -1,3 +1,32 @@
+const State = {
+  MENU: 0,
+  ERROR: 1,
+  PLAYING: 2,
+}
+
+const state = State.MENU
+
+const startBtn = document.getElementById("start-btn")
+
+console.log(startBtn)
+
+startBtn.addEventListener("click", () => {
+  ws = new WebSocket("ws://146.190.125.98:8080")
+
+  ws.onconnect = () => console.log("Connected to ws!")
+
+  ws.onmessage = (msg) => {
+    msg = JSON.parse(msg)
+
+    switch (msg.type) {
+      case "error":
+        // Error
+      case "":
+    } 
+    
+  }
+})
+
 navigator.mediaDevices
   .getUserMedia({ video: false, audio: true })
   .then((stream) => {

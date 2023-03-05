@@ -47,6 +47,10 @@ startBtn.addEventListener("click", () => {
           "log"
         ).innerHTML = `Game started!\nYou are player ${player + 1}.`;
         logSpan.className = "nes-text is-success";
+        playing = true
+        break;
+      case "game_end":
+        playing = false
         break;
       default:
         logSpan.innerHTML =

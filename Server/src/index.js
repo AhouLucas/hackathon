@@ -66,7 +66,7 @@ wss.on("connection", (ws) => {
   if (game.players < 2) {
     ws.player = game.players;
     game.players += 1;
-    game.clients[0] = ws;
+    game.clients[game.players] = ws;
     const msg = {
       type: "player_connected",
       player: ws.player,

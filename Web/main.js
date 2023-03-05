@@ -11,7 +11,7 @@ const startBtn = document.getElementById("start-btn")
 console.log(startBtn)
 
 startBtn.addEventListener("click", () => {
-  ws = new WebSocket("ws://146.190.125.98:8080")
+  const ws = new WebSocket("ws://146.190.125.98:8080")
 
   ws.onconnect = () => console.log("Connected to ws!")
 

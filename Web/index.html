@@ -4,17 +4,38 @@
     <title>Guindaille Simulator</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://unpkg.com/nes.css@latest/css/nes.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Press+Start+2P"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
-    <link href="https://fonts.cdnfonts.com/css/public-pixel" rel="stylesheet" />
     <style></style>
   </head>
 
   <body>
-      <img src="background2.gif" style="width: 100%" />
-      <h2 id="log"></h2>
-      <button type="button" id="start-btn">
-        <h1 id="button-text">Start Game</h1>
-      </button>
+    <div class="container">
+      <div class="nes-container with-title is-centered">
+        <p class="title">Guindaille Simulator</p>
+        <div id="log" class="nes-text success"></div>
+        <button class="nes-btn is-success" type="button" id="start-btn">
+          Start Game
+        </button>
+        <dialog class="nes-dialog" id="dialog-default">
+          <form method="dialog">
+            <p class="title">Dialog</p>
+            <p>Alert: this is a dialog.</p>
+            <menu class="dialog-menu">
+              <button class="nes-btn">Cancel</button>
+              <button class="nes-btn is-primary">Confirm</button>
+            </menu>
+          </form>
+        </dialog>
+      </div>
+    </div>
     <script type="module" src="/main.js"></script>
   </body>
 </html>

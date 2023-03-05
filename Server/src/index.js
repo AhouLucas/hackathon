@@ -63,20 +63,10 @@ const wss = new WebSocketServer({ server });
 wss.on("connection", (ws) => {
   ws.on("error", console.error);
 
-  if (game.players === 0) {
-    ws.player = 0;
+  if (game.players < 2) {
+    ws.player = game.players;
     game.players += 1;
-    game.clients[0] = ws;
-    const msg = {
-      type: "player_connected",
-      player: ws.player,
-    };
-    sendToGame(msg);
-    sendToClient(msg, ws);
-  } else if (game.players === 1) {
-    ws.player = 1;
-    game.players += 1;
-    game.clients[0] = ws;
+    game.clients[game.players] = ws;
     const msg = {
       type: "player_connected",
       player: ws.player,
@@ -112,7 +102,14 @@ wss.on("connection", (ws) => {
           type: "mic_high",
           player: ws.player,
         });
+      } else if (data.type === "mic_low") {
+        sendToGame({
+          type: "mic_low",
+          player: ws.player,
+        });
       }
     }
   });
 });
+
+server.listen(8080);

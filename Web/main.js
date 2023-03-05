@@ -1,6 +1,8 @@
 let playing = false;
 let player = -1;
+let mic_high = false;
 const startBtn = document.getElementById("start-btn");
+const logSpan = document.getElementById("log")
 
 console.log(startBtn);
 
@@ -11,12 +13,13 @@ startBtn.addEventListener("click", () => {
 
   ws.onopen = () => {
     console.log("Connected to ws!");
-    document.getElementById("button-text").innerHTML = "Restart Game";
+    startBtn.style.display = "none"
   };
 
   ws.onerror = (e) => {
     console.log(e);
-    document.getElementById("log").innerHTML = "Connection Error";
+    logSpan.innerHTML = "Connection Error";
+    logSpan.className = "nes-text is-error";
   };
 
   ws.onmessage = (msg) => {
@@ -26,24 +29,33 @@ startBtn.addEventListener("click", () => {
     switch (msg.type) {
       case "error": {
         if (msg.content === "full") {
-          document.getElementById("log").innerHTML = "Game is full!";
+          logSpan.innerHTML = "Game is full!";
+          logSpan.className = "nes-text is-error";
         } else {
-          document.getElementById("log").innerHTML = "Service Error";
+          logSpan.innerHTML = "Service Error";
+          logSpan.className = "nes-text is-error";
         }
         break;
       }
       case "player_connected":
-        document.getElementById("log").innerHTML = `Waiting for players...`;
+        logSpan.innerHTML = `Waiting for players...`;
+        logSpan.className = "nes-text is-primary";
         player = msg.player;
         break;
       case "game_start":
         document.getElementById(
           "log"
         ).innerHTML = `Game started!\nYou are player ${player + 1}.`;
+        logSpan.className = "nes-text is-success";
+        playing = true
+        break;
+      case "game_end":
+        playing = false
         break;
       default:
-        document.getElementById("log").innerHTML =
+        logSpan.innerHTML =
           "Unknown message from server!";
+        logSpan.className = "nes-text is-error";
         break;
     }
   };
@@ -75,11 +87,12 @@ navigator.mediaDevices
       // audioMeter varies from 0 to 10
       const audioMeter = Math.sqrt(sum / frequencyRangeData.length);
 
-      console.log(audioMeter);
-      if (audioMeter > 5) {
+      console.log(audioMeter)
+
+      if (playing) {
         ws.send(
           JSON.stringify({
-            type: "mic_high",
+            type: audioMeter > 11 ? "mic_high": "mic_low"
           })
         );
       }

@@ -2,7 +2,7 @@ import pygame as pg
 from random import randint
 from classes import Player, Drink
 import time
-from controller import controller
+# from Controller import controller
 
 #### Pygame Initialisation ####
 
@@ -30,7 +30,7 @@ Player2_drinks = []
 
 # Images
 background_1 = pg.image.load("Images/sprites/background1.png")
-background_2 = pg.image.load("Images/sprites/background1.png")
+background_2 = pg.image.load("Images/sprites/background2.png")
 background_1 = pg.transform.scale(background_1, (WIDTH, HEIGHT))
 background_2 = pg.transform.scale(background_2, (WIDTH, HEIGHT))
 background = [background_1, background_2]
@@ -75,11 +75,9 @@ def animate_background():
     
 def animate_drinks():
     for drink in Player1_drinks:
-        if drink.drunk: Player1_drinks.remove(drink)
         drink.animate(screen)
             
     for drink in Player2_drinks:
-        if drink.drunk: Player1_drinks.remove(drink)
         drink.animate(screen)
 
 def write_to_screen(text, position, font_size, color):
@@ -129,13 +127,16 @@ def main():
         else:
             Player_1.show(screen)
             Player_2.show(screen)
-            animate_drinks()
+            # animate_drinks()
             if keys[pg.K_z]:
+                # if Player_1.drinkInHand : Player_1.drinkInHand.show(screen)
                 drinks_drink(1)
             elif keys[pg.K_m]:
+                # if Player_2.drinkInHand: Player_2.drinkInHand.show(screen)
                 drinks_drink(2)
 
         count_frame += 1
+        animate_drinks()
         pg.display.update()
         clock.tick(60)
             

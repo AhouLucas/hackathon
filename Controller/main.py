@@ -66,6 +66,7 @@ with mp_pose.Pose(
         image[:, width_cutoff:] = s2
 
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
         # Flip the image horizontally for a selfie-view display.
         cv2.imshow('MediaPipe Pose', cv2.flip(image, 1))
         if cv2.waitKey(5) & 0xFF == 27:

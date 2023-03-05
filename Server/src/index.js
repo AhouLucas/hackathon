@@ -11,18 +11,26 @@ let game = {
 const broacastToClients = (data) =>
   game.clients.forEach((ws) => ws && client.send(JSON.stringify(data)));
 
+const sendToGame = (data) => game.socket.write(JSON.stringify(data));
+const sendToClient = (data, ws) => ws.send(JSON.stringify(data));
+
 const ss = net.createServer((socket) => {
   game.socket = socket;
 
+  socket.on("error", (e) => {
+    console.log(e);
+  });
+
   socket.on("data", (data) => {
     data = JSON.parse(data);
+    console.log(data)
 
     if (data) {
       switch (data.type) {
         case "game_start":
           broacastToClients(data);
         case "game_end":
-          broacastToClients(data)
+          broacastToClients(data);
       }
     }
   });
@@ -37,30 +45,34 @@ wss.on("connection", (ws) => {
 
   if (game.players === 0) {
     ws.player = 0;
-    game.socket.write(
-      JSON.stringify({
-        type: "player_connected",
-        player: ws.player,
-      })
-    );
+    game.players += 1;
+    const msg = {
+      type: "player_connected",
+      player: ws.player,
+    };
+    sendToGame(msg);
+    sendToClient(msg, ws);
   } else if (game.players === 1) {
     ws.player = 1;
-    game.socket.write(
-      JSON.stringify({
-        type: "player_connected",
-        player: ws.player,
-      })
-    );
+    game.players += 1;
+    const msg = {
+      type: "player_connected",
+      player: ws.player,
+    };
+    sendToGame(msg);
+    sendToClient(msg, ws);
   } else {
     ws.send(
       JSON.stringify({
-        error: "full",
+        type: "error",
+        content: "full",
       })
     );
     ws.close();
   }
 
   ws.on("close", () => {
+    game.players -= 1;
     game.socket.write(
       JSON.stringify({
         type: "player_disconnected",

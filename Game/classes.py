@@ -30,15 +30,10 @@ class Player:
     armKey = 30
     drinkingKey = 20
 
-<<<<<<< HEAD
-    def __init__(self, position, size, pseudo, image=None, victory_scream=None):
-        self.position = position
-=======
     hOffset = 0
     vOffset = 0
 
     def __init__(self, position,size, pseudo, image=None, victory_scream=None):
->>>>>>> 722403cfe25f65c2dfcfee633b2f6b5b6b1ed646
         self.pseudo = pseudo
         self.image = image
         self.dead = False
@@ -55,10 +50,6 @@ class Player:
         self.images = {
             "vomit": pg.transform.scale(pg.image.load("Images/sprites/vomit.png"), (self.width, self.height)),
             "normal": pg.transform.scale(pg.image.load("Images/sprites/happy.png"), (self.width, self.height)),
-<<<<<<< HEAD
-            "arm": pg.transform.scale(pg.image.load("Images/sprites/arm-with-glass.png"), (self.width, self.height)),
-            "drinking": pg.transform.scale(pg.image.load("Images/sprites/drinking-with-glass.png"), (self.width, self.height)),
-=======
             "arm": pg.transform.scale(pg.image.load("Images/sprites/arm.png"), (self.width, self.height)),
             "drinking": pg.transform.scale(pg.image.load("Images/sprites/drinking.png"), (self.width, self.height)),
             "bucket": pg.transform.scale(pg.image.load("Images/sprites/bucket.png"), (self.width, self.height))
@@ -67,7 +58,6 @@ class Player:
         self.flags = {
             "flip": False,
             "drunk": False
->>>>>>> 722403cfe25f65c2dfcfee633b2f6b5b6b1ed646
         }
 
     def show(self, screen):
@@ -101,9 +91,6 @@ class Player:
             img = self.images["drinking"]
             screen.blit(img, (self.position[0], self.position[1]))
 
-<<<<<<< HEAD
-            #self.drinkInHand.position = (300, 300)
-=======
             if not self.flags["flip"]: 
                 self.drinkInHand.img = pg.transform.flip(self.drinkInHand.img, False, True)
                 self.flags["flip"] = True
@@ -111,7 +98,6 @@ class Player:
                 self.drinkInHand.position[0] -= 95
                 self.drinkInHand.position[1] -= 425
                 self.flags["drunk"] = True 
->>>>>>> 722403cfe25f65c2dfcfee633b2f6b5b6b1ed646
             self.drinkInHand.show(screen)
             if self.flags["drunk"]:
                 self.drinkInHand.position[0] += 95
@@ -167,14 +153,7 @@ class Drink:
         #screen.blit(self.img, (self.position[0], self.position[1]))
         
     def animate(self, screen):
-<<<<<<< HEAD
-        pass
-        #if self.position[1] > 3 * screen.get_size()[1] // 5:
-        #    self.position[1] -= 15
-        #self.show(screen)
-=======
         if self.position[1] > 3 * screen.get_size()[1] // 5:
             self.position[1] -= 25
             self.show(screen)
->>>>>>> 722403cfe25f65c2dfcfee633b2f6b5b6b1ed646
  

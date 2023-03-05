@@ -88,11 +88,12 @@ navigator.mediaDevices
       const audioMeter = Math.sqrt(sum / frequencyRangeData.length);
 
       console.log(audioMeter)
+      console.log(playing)
 
       if (playing) {
         ws.send(
           JSON.stringify({
-            type: audioMeter > 11 ? "mic_high": "mic_low"
+            type: audioMeter > 7 ? "mic_high": "mic_low"
           })
         );
       }

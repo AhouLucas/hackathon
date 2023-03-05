@@ -24,8 +24,8 @@ class Gauge:
         return self.value <= 0
 
 class Player:
-    vomitingKey = 90
-    initKey = 70
+    vomitingKey = 80
+    initKey = 60
     normalKey = 40
     armKey = 30
     drinkingKey = 20
@@ -44,12 +44,19 @@ class Player:
         self.animationStatus = Player.initKey
         self.drinkInHand = None
         self.lastAddedDrink = 0
+        self.countdown = 20
         
         self.images = {
             "vomit": pg.transform.scale(pg.image.load("Images/sprites/vomit.png"), (self.width, self.height)),
             "normal": pg.transform.scale(pg.image.load("Images/sprites/happy.png"), (self.width, self.height)),
             "arm": pg.transform.scale(pg.image.load("Images/sprites/arm.png"), (self.width, self.height)),
             "drinking": pg.transform.scale(pg.image.load("Images/sprites/drinking.png"), (self.width, self.height)),
+            "bucket": pg.transform.scale(pg.image.load("Images/sprites/bucket.png"), (self.width, self.height))
+        }
+
+        self.flags = {
+            "flip": False,
+            "drunk": False
         }
 
     def show(self, screen):
@@ -57,6 +64,8 @@ class Player:
             img = self.images["vomit"]
             screen.blit(img, (self.position[0] + Player.hOffset, self.position[1] + Player.vOffset))
             
+            img = self.images["bucket"]
+            screen.blit(img, (self.position[0] + Player.hOffset, self.position[1] + 150))
             self.animationStatus -= 1
         
         if Player.normalKey <= self.animationStatus <= Player.initKey:
@@ -77,21 +86,37 @@ class Player:
             screen.blit(img, (self.position[0] + Player.hOffset + 10, self.position[1] + 100))
             
             self.animationStatus -= 1
-            
+        
         if self.animationStatus < Player.armKey:
             img = self.images["drinking"]
             screen.blit(img, (self.position[0] + Player.hOffset - 25, self.position[1] - 62))
 
-            self.drinkInHand.position = (300, 300)
+            if not self.flags["flip"]: 
+                self.drinkInHand.img = pg.transform.flip(self.drinkInHand.img, False, True)
+                self.flags["flip"] = True
+            if not self.flags["drunk"]: 
+                self.drinkInHand.position[0] -= 95
+                self.drinkInHand.position[1] -= 425
+                self.flags["drunk"] = True 
             self.drinkInHand.show(screen)
-            # self.drinkInHand.position[1] += 100
+            if self.flags["drunk"]:
+                self.drinkInHand.position[0] += 95
+                self.drinkInHand.position[1] += 425
+                self.flags["drunk"] = False
             
             self.animationStatus -= 1
-            
+           
         if self.animationStatus == Player.drinkingKey:
             self.drunkness_level.add(self.drinkInHand.type.alcohol)
+            # if self.drunkness_level.value >= self.drunkness_level.max_value:
+            #     img = self.images["drunk"]
+            #     screen.blit(img, (self.position[0] + Player.hOffset, self.position[1] + Player.vOffset))
+                # self.dead = True
+            
             self.animationStatus = Player.initKey
-        
+            self.flags["flip"] = False
+            self.countdown -= 1
+    
         self.drunkness_level.show(screen)
 
     def drink(self, drink):
@@ -111,9 +136,10 @@ class DrinkType:
 
 class Drink:
     TYPE = (
-        DrinkType(r"Images/sprites/small glass.png", 10),
-        DrinkType(r"Images/sprites/bottle.png", 20),
-        DrinkType(r"Images/sprites/gordon.png", 30)
+        DrinkType(r"Images/sprites/small glass.png", 30),
+        DrinkType(r"Images/sprites/big glass.png", 50),
+        DrinkType(r"Images/sprites/bottle.png", 70),
+        DrinkType(r"Images/sprites/gordon.png", 90)
     )
     
     def __init__(self, type, position):
@@ -128,6 +154,6 @@ class Drink:
         
     def animate(self, screen):
         if self.position[1] > 3 * screen.get_size()[1] // 5:
-            self.position[1] -= 15
+            self.position[1] -= 25
             self.show(screen)
  

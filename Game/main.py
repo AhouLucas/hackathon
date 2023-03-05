@@ -96,7 +96,7 @@ def drinks_drink(player: int):
         if count_frame - Player_1.lastAddedDrink < 10: return
         Player_1.lastAddedDrink = count_frame 
     
-        Player1_drinks.append(Drink(randint(0, 2), [WIDTH / 3, HEIGHT]))
+        Player1_drinks.append(Drink(randint(0, len(Drink.TYPE) - 1), [WIDTH / 3, HEIGHT - 50]))
         Player_1.drink(Player1_drinks[-1])
         # Player1_drinks.append(Drink(randint(0, 2), [WIDTH / 3, HEIGHT]))
         
@@ -107,7 +107,7 @@ def drinks_drink(player: int):
         if count_frame - Player_2.lastAddedDrink < 10: return
         Player_2.lastAddedDrink = count_frame 
         
-        Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT]))
+        Player2_drinks.append(Drink(randint(0, len(Drink.TYPE) - 1), [2 * WIDTH / 3, HEIGHT - 50]))
         Player_2.drink(Player2_drinks[-1])
         # Player2_drinks.append(Drink(randint(0, 2), [2 * WIDTH / 3, HEIGHT]))
 
@@ -115,6 +115,11 @@ def main():
     global running, start, count_frame
     play_music('Musics/Start Menu.mp3')
     while running:
+        
+        
+        if Player_1.dead or Player_2.dead: 
+            running = False
+        
         # Get the user keyboard inputs
         keys = pg.key.get_pressed() 
 
@@ -142,8 +147,20 @@ def main():
             elif players_state[1] or keys[pg.K_m]:
                 drinks_drink(2)
        
+        # if count_frame == 50: Player_1.animationStatus = Player.vomitingKey
+       
         count_frame += 1
         animate_drinks()
+        
+        if Player_1.countdown == 0: 
+            write_to_screen("You won!", (Player_1.position[0] - 50, Player_1.position[1]), 52, "Green")
+            time.sleep(3)
+            pg.quit()
+        if Player_2.countdown == 0: 
+            write_to_screen("You won!", (Player_2.position[0] - 50, Player_2.position[1]), 52, "Green")
+            time.sleep(3)
+            pg.quit()
+        
         pg.display.update()
         clock.tick(60)
             

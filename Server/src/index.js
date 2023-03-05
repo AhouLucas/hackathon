@@ -15,7 +15,7 @@ const initGame = () => {
 initGame()
 
 const broacastToClients = (data) =>
-  game.clients.forEach((ws) => ws && client.send(JSON.stringify(data)));
+  game.clients.forEach((ws) => ws && ws.send(JSON.stringify(data)));
 
 const sendToGame = (data) => game.socket.write(JSON.stringify(data));
 const sendToClient = (data, ws) => ws.send(JSON.stringify(data));

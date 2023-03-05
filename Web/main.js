@@ -15,10 +15,10 @@ startBtn.addEventListener("click", () => {
 
   ws.onconnect = () => {
     console.log("Connected to ws!");
-    
   }
 
-  ws.onerror = () => {
+  ws.onerror = (e) => {
+    console.log(e)
     document.getElementById("log").innerHTML = "Connection Error";
   }
 

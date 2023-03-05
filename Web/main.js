@@ -96,7 +96,7 @@ navigator.mediaDevices
           })
         );
       }
-    }, 100);
+    }, 300);
   })
   .catch((err) => {
     console.error(`you got an error: ${err}`);

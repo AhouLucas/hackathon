@@ -35,8 +35,10 @@ const ss = net.createServer((socket) => {
     if (data) {
       switch (data.type) {
         case "game_start":
+          game.running = true
           broacastToClients(data);
         case "game_end":
+          game.running = false
           broacastToClients(data);
       }
     }
